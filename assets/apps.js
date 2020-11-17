@@ -1,21 +1,20 @@
 let allData;
 
-$.getJSON("./data/labyrinthes.json", function (data) {
+$.getJSON("./data/labyrinthes.json", function(data) {
 
     allData = data
 
-}).fail(function () {
+}).fail(function() {
     console.log("An error has occurred. On allData");
 });
 
-
-$(document).ready(function () {
+$(document).ready(function() {
 
     const getDataChoose = (param1, param2) => {
         return allData[param1][param2];
     }
 
-    $("#isReady").click(function () {
+    $("#isReady").click(function() {
         isReady();
         $("#formReady").removeClass("d-none");
         $(this).addClass("d-none");
@@ -29,7 +28,7 @@ $(document).ready(function () {
         }
     }
 
-    $("#mazeChoose").on('change', function () {
+    $("#mazeChoose").on('change', function() {
 
         $("#exempleChoose option").remove();
         let exemple = $("#mazeChoose").val();
@@ -41,26 +40,30 @@ $(document).ready(function () {
         }
     })
 
-    let mazechosen;
+    let mazeSelected;
 
     $("#exempleChoose").on('change', function() {
+
         let size = $("#mazeChoose").val();
         let exemple = $("#exempleChoose").val();
 
-        mazechosen = getDataChoose(`${size}`,`${exemple}`);
-        console.log(mazechosen);
+        mazeSelected = getDataChoose(`${size}`, `${exemple}`);
+        console.log(mazeSelected);
+        display(size, mazeSelected);
     })
 
+    const display = (size, mazeSelected) => {
 
+        $("#trTable tr").remove();
 
+        let td = `<td></td>`;
 
+        let tr = `<tr>${td.repeat(size)}</tr>`;
 
+        let allRow = tr.repeat(size);
 
+        $("#trTable").append(allRow);
 
-
+    }
 
 });
-
-
-
-
