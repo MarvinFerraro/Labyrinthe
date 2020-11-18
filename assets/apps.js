@@ -79,10 +79,6 @@ $(document).ready(function() {
 
         let box = 100;
 
-        if (size >= 20) {
-            box = 20;
-        }
-
         if (size >= 15) {
             box = 30;
         }
@@ -90,6 +86,10 @@ $(document).ready(function() {
         if (size >= 10) {
             box = 50;
         }
+        if (size >= 20) {
+            box = 20;
+        }
+
 
         document.getElementById(
             "grid-container"
