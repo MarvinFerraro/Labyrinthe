@@ -1,3 +1,6 @@
+/*******************************
+ * Function LoadJson Async *
+ ***************************/
 let allData;
 
 $.getJSON("./data/labyrinthes.json", function(data) {
@@ -10,23 +13,23 @@ $.getJSON("./data/labyrinthes.json", function(data) {
 
 $(document).ready(function() {
 
-    /******************
+    /*****************
      * Function Clear*
-     ******************/
+     *****************/
     const clear = (elementRemove) => {
         $(`${elementRemove}`).remove();
     }
 
-    /******************
-     * Function GetDataWithParam*
-     ******************/
+    /*****************************
+     * Function GetDataWithParam *
+     *****************************/
     const getDataChoose = (param1, param2) => {
         return allData[param1][param2];
     }
 
-    /******************
-     * Function Click for prepare the display form*
-     ******************/
+    /**********************************************
+     * Function Click for prepare the display form *
+     ***********************************************/
     $("#isReady").click(function() {
         isReady();
         $("#formReady").removeClass("d-none");
@@ -34,6 +37,11 @@ $(document).ready(function() {
     });
 
     const isReady = () => {
+
+        $('#mazeChoose').append(
+            `<option selected disabled>Choose a Maze</option>`
+        );
+
         for (const size in allData) {
             $('#mazeChoose').append(
                 `<option value="${size}"> ${size}x${size} </option>`
@@ -41,13 +49,17 @@ $(document).ready(function() {
         }
     }
 
-    /******************
+    /*************************************************
      * On change of maze choose, for display exemple *
-     ******************/
+     *************************************************/
     $("#mazeChoose").on('change', function() {
 
         clear("#exempleChoose option");
         let exemple = $("#mazeChoose").val();
+
+        $('#exempleChoose').append(
+            `<option selected disabled>Choose a exemple </option>`
+        );
 
         for (const ex in allData[exemple]) {
             $('#exempleChoose').append(
@@ -56,10 +68,11 @@ $(document).ready(function() {
         }
     })
 
-    /******************
+    /*************************************************
      * On change of exemple, display the maze chosen *
-     ******************/
+     *************************************************/
     let mazeSelected;
+
 
     $("#exempleChoose").on('change', function() {
 
@@ -67,14 +80,13 @@ $(document).ready(function() {
         let exemple = $("#exempleChoose").val();
 
         mazeSelected = getDataChoose(`${size}`, `${exemple}`);
-        console.log(mazeSelected);
         clear("#grid-container div");
         displayMaze(size, mazeSelected);
     })
 
-    /******************
+    /*********************************
      * Function for Display the maze *
-     ******************/
+     *********************************/
     const displayMaze = (size, maze) => {
 
         let box = 100;
@@ -86,10 +98,10 @@ $(document).ready(function() {
         if (size >= 10) {
             box = 50;
         }
+
         if (size >= 20) {
             box = 20;
         }
-
 
         document.getElementById(
             "grid-container"
@@ -109,10 +121,11 @@ $(document).ready(function() {
                 }
             }
 
-            console.log(borderstyle, "cell n° " + i);
+            // console.log(borderstyle, "cell n° " + i);
 
             let element = document.createElement("DIV");
             element.className = "cell cell_" + i;
+            element.id = "id_" + i;
             if (i == maze.length - 1) {
                 element.className = "cell_end";
             }
@@ -120,4 +133,177 @@ $(document).ready(function() {
             document.getElementById("grid-container").appendChild(element);
         }
     }
+
+    /***********************
+     * Function Neighbours *
+     ***********************/
+    let displayBuffer = [];
+
+    const neighbours = (maze, cell, size) => {
+
+        size = parseInt(size);
+        const neighbours = [];
+
+        const index_cell = maze.indexOf(cell);
+
+        //Define neighbours top, right, bottom, left
+        let top_cell;
+        if (index_cell > size) {
+            top_cell = index_cell - size;
+        } else top_cell = null;
+
+        let bottom_cell;
+        if (index_cell < maze.length - size) {
+            bottom_cell = index_cell + size;
+        } else bottom_cell = null;
+
+        let right_cell = index_cell + 1;
+
+        let left_cell = index_cell - 1;
+
+        //Push neighbours in neighbours array
+
+        if (cell.walls[0] == false && top_cell) {
+            neighbours.push(top_cell);
+        }
+        if (cell.walls[3] == false && left_cell) {
+            neighbours.push(left_cell);
+        }
+        if (cell.walls[1] == false && right_cell) {
+            neighbours.push(right_cell);
+        }
+        if (cell.walls[2] == false && bottom_cell) {
+            neighbours.push(bottom_cell);
+        }
+        return neighbours;
+    };
+
+    /****************
+     * Function DFS *
+     ****************/
+    const dfs = (size, maze) => {
+
+        const start = maze[0];
+
+        for (let i = 0; i < maze.length; i++) {
+            maze[i].isVisited = false;
+        };
+
+        let stack = [];
+
+        stack.push(start);
+        start.isVisited = true;
+
+        while (stack.length != 0) {
+
+            let current_cell = stack.pop();
+            displayBuffer.push(maze.indexOf(current_cell));
+
+            let arrayNeighbours = neighbours(maze, current_cell, size);
+            console.log(arrayNeighbours);
+
+            if (current_cell == maze[maze.length - 1]) {
+                console.log("Win");
+                return
+            };
+
+            arrayNeighbours.forEach(neighbours => {
+
+                if (maze[neighbours].isVisited === false) {
+
+                    console.log(neighbours);
+
+                    stack.push(maze[neighbours]);
+
+                    maze[neighbours].isVisited = true;
+                }
+            });
+        };
+    };
+
+    /****************
+     * Function BFS *
+     ****************/
+    const bfs = (size, maze) => {
+
+        const start = maze[0];
+
+        for (let i = 0; i < maze.length; i++) {
+            maze[i].isVisited = false;
+        };
+
+        let queue = [];
+
+        queue.push(start);
+        start.isVisited = true;
+
+        while (queue.length != 0) {
+
+            let current_cell = queue.shift();
+            displayBuffer.push(maze.indexOf(current_cell));
+
+            let arrayNeighbours = neighbours(maze, current_cell, size);
+            console.log(arrayNeighbours);
+
+            if (current_cell == maze[maze.length - 1]) {
+                console.log("Win");
+                return
+            };
+
+            arrayNeighbours.forEach(neighbours => {
+
+                if (maze[neighbours].isVisited === false) {
+
+                    console.log(neighbours);
+
+                    queue.push(maze[neighbours]);
+
+                    maze[neighbours].isVisited = true;
+                }
+            });
+        };
+    };
+
+    /************************
+     * Function DisplayTimer *
+     ************************/
+    const startDisplay = () => {
+        setInterval(() => {
+            $("#id_" + displayBuffer.shift()).addClass("good");
+        }, 500)
+    }
+
+    /********************************
+     * Function on click on DFS do  *
+     *********************************/
+    $("#DFS").click(function() {
+
+        let size = $("#mazeChoose").val();
+        let exemple = $("#exempleChoose").val();
+        mazeSelected = getDataChoose(`${size}`, `${exemple}`);
+
+        dfs(size, mazeSelected);
+        startDisplay();
+    })
+
+    /********************************
+     * Function on click on BFS do  *
+     ********************************/
+    $("#BFS").click(function() {
+
+        let size = $("#mazeChoose").val();
+        let exemple = $("#exempleChoose").val();
+        mazeSelected = getDataChoose(`${size}`, `${exemple}`);
+
+        bfs(size, mazeSelected);
+        startDisplay();
+    })
+
+
+
+
+
+
+
+
 });

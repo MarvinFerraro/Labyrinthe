@@ -12,5 +12,10 @@
 }
 
 .cell_end {
-    background-color: purple;
+    background-color: palevioletred;
+}
+
+.good {
+    padding: 5px;
+    background-color: burlywood;
 }

@@ -12,37 +12,45 @@
 </head>
 
 <body>
-    <div>
-        <h1>Labyrinthe</h1>
-        <button id="isReady" class="btn btn-outline-primary"> Vous etes pret ??</button>
-    </div>
-
-
-    <div class="d-none" id="formReady">
+    <div class="container">
 
         <div>
-            <label for="numbreBox"> >Nombre de case</label>
-
-            <select name="numbreBox" id="mazeChoose">
-
-            </select>
+            <h1>Labyrinthe</h1>
+            <button id="isReady" class="btn btn-outline-primary"> Vous etes pret ??</button>
         </div>
 
 
-        <div>
-            <label for="exemple"> >Exemple</label>
+        <div class="d-none" id="formReady">
 
-            <select name="exemple" id="exempleChoose">
+            <div>
+                <label for="numbreBox"> >Nombre de case</label>
+
+                <select name="numbreBox" id="mazeChoose">
+                
+            </select>
+            </div>
+
+
+            <div>
+                <label for="exemple"> >Exemple</label>
+
+                <select name="exemple" id="exempleChoose">
 
             </select>
+            </div>
+
+        </div>
+
+        <div id="grid-container" class="mb-5 mx-auto">
+
+        </div>
+
+        <div class="d-flex justify-content-center flex-row">
+            <button class="btn btn-primary mr-4" id="DFS"> DFS </button>
+            <button class="btn btn-primary" id="BFS"> BFS </button>
         </div>
 
     </div>
-
-    <div id="grid-container">
-
-    </div>
-
 
 
 
