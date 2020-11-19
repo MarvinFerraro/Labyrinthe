@@ -73,7 +73,6 @@ $(document).ready(function() {
      *************************************************/
     let mazeSelected;
 
-
     $("#exempleChoose").on('change', function() {
 
         let size = $("#mazeChoose").val();
@@ -138,6 +137,7 @@ $(document).ready(function() {
      * Function Neighbours *
      ***********************/
     let displayBuffer = [];
+    let displayBufferBestWay = [];
 
     const neighbours = (maze, cell, size) => {
 
@@ -184,6 +184,7 @@ $(document).ready(function() {
     const dfs = (size, maze) => {
 
         const start = maze[0];
+        let count = 0;
 
         for (let i = 0; i < maze.length; i++) {
             maze[i].isVisited = false;
@@ -204,6 +205,7 @@ $(document).ready(function() {
 
             if (current_cell == maze[maze.length - 1]) {
                 console.log("Win");
+                displayChemin(maze.indexOf(current_cell), maze)
                 return
             };
 
@@ -212,13 +214,16 @@ $(document).ready(function() {
                 if (maze[neighbours].isVisited === false) {
 
                     console.log(neighbours);
+                    maze[neighbours].parent = maze.indexOf(current_cell);
 
                     stack.push(maze[neighbours]);
-
                     maze[neighbours].isVisited = true;
                 }
             });
+
         };
+
+        return false;
     };
 
     /****************
@@ -243,10 +248,10 @@ $(document).ready(function() {
             displayBuffer.push(maze.indexOf(current_cell));
 
             let arrayNeighbours = neighbours(maze, current_cell, size);
-            console.log(arrayNeighbours);
 
             if (current_cell == maze[maze.length - 1]) {
                 console.log("Win");
+                displayChemin(maze.indexOf(current_cell), maze)
                 return
             };
 
@@ -256,21 +261,42 @@ $(document).ready(function() {
 
                     console.log(neighbours);
 
+                    maze[neighbours].parent = maze.indexOf(current_cell);
                     queue.push(maze[neighbours]);
-
                     maze[neighbours].isVisited = true;
                 }
             });
         };
+        return false;
     };
 
     /************************
      * Function DisplayTimer *
      ************************/
     const startDisplay = () => {
+
         setInterval(() => {
             $("#id_" + displayBuffer.shift()).addClass("good");
-        }, 500)
+        }, 300)
+
+        setTimeout(() => {
+            setInterval(() => {
+                $("#id_" + displayBufferBestWay.shift()).addClass("way");
+            }, 300)
+        }, 300 * displayBuffer.length)
+    }
+
+    /************************
+     * Function Save the route *
+     ************************/
+    const displayChemin = (end_id, maze) => {
+        let id = end_id;
+        while (id != 0) {
+            console.log(maze[id].parent);
+            displayBufferBestWay.push(id);
+            id = maze[id].parent;
+        }
+        displayBufferBestWay.push(id);
     }
 
     /********************************
